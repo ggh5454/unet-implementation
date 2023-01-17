@@ -1,0 +1,7 @@
+*.pyc
+data/
+runs
+__pycache__/
+checkpoints/
+*.pth
+*.jpg
