@@ -9,23 +9,40 @@ from glob import glob
 from torch.utils.data import Dataset, DataLoader
 
 class KvasirDataset(Dataset):
-    def __init__(self, path="data/Kvasir-SEG", transform='') -> None:
+    def __init__(self, path="data/Kvasir-SEG", transform='', mode="train") -> None:
         super().__init__()
         self.path = path
         self.transform =transform
         self.images = sorted(glob(path + '/images/*'))
         self.masks = sorted(glob(path + '/masks/*'))
         self.json = glob(path + '/*.json')
+        size = len(self.images) * 0.8
+        if mode == "train":
+            self.images = self.images[:int(size)]
+            self.masks = self.masks[:int(size)]
+        else:
+            self.images = self.images[int(size):]
+            self.masks = self.masks[int(size):]
+
+        
+        
     
     def __getitem__(self, index):
         img = self.images[index]
+        img = Image.open(img)
+        img = np.array(img, dtype=np.float32)
         mask = self.masks[index]
+        mask = Image.open(mask).convert("L")
+        mask = np.array(mask, dtype=np.float32)
+
 
         if self.transform:
-            img = self.transform(img)
-            mask = self.transform(mask)
+            transformed = self.transform(image=img, mask=mask)
+            img = transformed['image']
+            
+            mask = transformed['mask']
 
-        return img, mask
+        return img, mask.unsqueeze(0)
     
     def __len__(self):
         return len(self.images)

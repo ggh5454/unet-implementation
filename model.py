@@ -27,13 +27,13 @@ def caculate_padding(x1, x2):
     return diffX, diffY
 
 class UNet(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, in_feature, out_feature) -> None:
         super().__init__()
 
         features = [64, 128, 256, 512, 1024]
 
         # contracting path
-        self.convblock1 = convblock(1, features[0])
+        self.convblock1 = convblock(in_feature, features[0])
         self.pool1 = nn.MaxPool2d(2)
         self.convblock2 = convblock(features[0], features[1])
         self.pool2 = nn.MaxPool2d(2)
@@ -56,7 +56,7 @@ class UNet(nn.Module):
         self.convblock8 = convblock(features[2], features[1])
 
         self.upconv4 = nn.ConvTranspose2d(features[1], features[0], stride=2, kernel_size=2)
-        self.convblock9 = convblock(features[1], 2)
+        self.convblock9 = convblock(features[1], out_feature)
 
     def forward(self, x):
         x1 = self.convblock1(x)
@@ -72,7 +72,6 @@ class UNet(nn.Module):
         x = self.upconv1(x)
         diffX, diffY = caculate_padding(x4, x)
         x = F.pad(x, (diffX//2,diffX-diffX//2,diffY//2,diffY-diffY//2))
-        print(x.shape, x4.shape)
         x = self.convblock6(torch.cat((x4, x), 1))
 
 
