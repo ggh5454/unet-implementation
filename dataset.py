@@ -25,16 +25,17 @@ class KvasirDataset(Dataset):
             self.masks = self.masks[int(size):]
 
         
-        
-    
     def __getitem__(self, index):
         img = self.images[index]
-        img = Image.open(img)
-        img = np.array(img, dtype=np.float32)
+        img = cv2.imread(img)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        img = np.array(img, dtype=np.float32) / 255
         mask = self.masks[index]
-        mask = Image.open(mask).convert("L")
-        mask = np.array(mask, dtype=np.float32)
-
+        mask = cv2.imread(mask)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        
+        mask = np.array(mask, dtype=np.float32) / 255
 
         if self.transform:
             transformed = self.transform(image=img, mask=mask)
