@@ -73,21 +73,21 @@ for epoch in range(1, EPOCHS + 1):
         img, mask = img.to(device), mask.to(device)
         optimizer.zero_grad()
 
-        output = model(img)
+        outputs = model(img)
 
-        loss = criterion(output, mask)
+        loss = criterion(outputs, mask)
 
         loss.backward(retain_graph=True)
 
         optimizer.step()
-        iou = metrics.IoU(torch.where(output>0.5, 1, 0), mask)
+        iou = metrics.IoU(torch.where(outputs>0.5, 1.0, 0.0), mask)
         Iou.append(iou)
         total_loss += loss.item()
     
     with torch.no_grad():
         imgs, masks = test_img, test_mask
         outputs = model(imgs.to(device)).detach().cpu()
-        outputs = torch.where(outputs>0.5, 1, 0)
+        outputs = torch.where(outputs>0.5, 1.0, 0.0)
         plt.subplot(1,3,1)
         plt.imshow(tr_img(imgs[0]), cmap='gray')
         plt.subplot(1,3,2)

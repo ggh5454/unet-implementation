@@ -43,7 +43,7 @@ with torch.no_grad():
     for imgs, masks in test_dataloader:
         outputs = model(imgs.to(device)).detach().cpu()
 
-        outputs = torch.where(outputs>0.5, 1, 0)
+        outputs = torch.where(outputs>0.5, 1.0, 0.0)
 
         for i in range(BATCH_SIZE):
             plt.subplot(1,3,1)
