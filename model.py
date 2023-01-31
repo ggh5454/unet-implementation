@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import math
 
 def convblock(in_feature, out_feature):
     conv = nn.Sequential(
@@ -58,6 +59,8 @@ class UNet(nn.Module):
         self.upconv4 = nn.ConvTranspose2d(features[1], features[0], stride=2, kernel_size=2)
         self.convblock9 = convblock(features[1], out_feature)
 
+        self.apply(self._init_weights)
+
     def forward(self, x):
         x1 = self.convblock1(x)
         x = self.pool1(x1)
@@ -89,6 +92,12 @@ class UNet(nn.Module):
         x = self.convblock9(torch.cat((x1, x), 1))
         return x
 
+    def _init_weights(self, module):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                    n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                    m.weight.data.normal_(0, math.sqrt(2. / n))
+                    
 # UNet()(torch.randn(1, 1, 572,572)).shape
 
 

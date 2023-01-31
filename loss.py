@@ -8,13 +8,9 @@ class EnergyLoss(nn.Module):
 
     def forward(self, logits, target):
         softmax2d = torch.nn.Softmax2d()
-        # logits is of shape [batch_size, feature_channels, height, width]
         logits = softmax2d(logits)
         m = nn.CrossEntropyLoss()
         
-        # At this point:
-        # logits.size() == [batch_size, feature_channels, height, width]
-        # target.size() == [batch_size, feature_channels, height, width]
         loss = m(logits, target)
         return loss
     
@@ -46,6 +42,7 @@ class FocalLoss(nn.Module):
         if not (target.size() == input.size()):
             raise ValueError("Target size ({}) must be the same as input size ({})"
                              .format(target.size(), input.size()))
+        # https://www.geeksforgeeks.org/python-pytorch-clamp-method/
         max_val = (-input).clamp(min=0)
         loss = input - input * target + max_val + \
             ((-max_val).exp() + (-input - max_val).exp()).log()

@@ -1,8 +1,8 @@
 *.pyc
-data/
-runs
 __pycache__/
 checkpoints/
 *.pth
-*.jpg
 .vscode/
+
+data/
+model/
