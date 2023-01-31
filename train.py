@@ -100,7 +100,7 @@ for epoch in range(1, EPOCHS + 1):
 
     
     loss_list.append(total_loss / len(train_dataloader))
-    print(f"[{epoch}] loss : {total_loss / len(train_dataloader)}, Iou : {iou}, MIou: {miou}")
+    print(f"[{epoch}] loss : {total_loss / len(train_dataloader)}, Iou : {iou}")
 
 if SAVE:    
     torch.save(model.state_dict(), "model/membrane_best.pt")
